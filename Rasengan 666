@@ -1,0 +1,53 @@
+local tool = script.Parent
+local cooldown = false
+local damage = 40
+local speed = 80
+
+local anim = tool:WaitForChild("RasenganAnim")
+
+tool.Activated:Connect(function()
+	if cooldown then return end
+	cooldown = true
+	
+	local char = tool.Parent
+	local hum = char:FindFirstChildOfClass("Humanoid")
+	local root = char:FindFirstChild("HumanoidRootPart")
+	local hand = char:FindFirstChild("Right Arm")
+	
+	if not hum or not root or not hand then return end
+	
+	local animator = hum:FindFirstChildOfClass("Animator") or Instance.new("Animator", hum)
+	local playAnim = animator:LoadAnimation(anim)
+	playAnim:Play()
+	
+	task.wait(0.4)
+	
+	local rasengan = Instance.new("Part")
+	rasengan.Shape = Enum.PartType.Ball
+	rasengan.Material = Enum.Material.Neon
+	rasengan.Color = Color3.fromRGB(120, 180, 255)
+	rasengan.Size = Vector3.new(1.5,1.5,1.5)
+	rasengan.CanCollide = false
+	rasengan.CFrame = hand.CFrame
+	rasengan.Parent = workspace
+	
+	local bv = Instance.new("BodyVelocity")
+	bv.MaxForce = Vector3.new(1e5,1e5,1e5)
+	bv.Velocity = root.CFrame.LookVector * speed
+	bv.Parent = rasengan
+	
+	rasengan.Touched:Connect(function(hit)
+		local h = hit.Parent:FindFirstChildOfClass("Humanoid")
+		if h and h ~= hum then
+			h:TakeDamage(damage)
+			rasengan:Destroy()
+		end
+	end)
+	
+	task.delay(3,function()
+		if rasengan then rasengan:Destroy() end
+	end)
+	
+	task.wait(5)
+	cooldown = false
+end)
