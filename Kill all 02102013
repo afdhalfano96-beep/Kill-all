@@ -1,0 +1,14 @@
+local button = script.Parent
+
+button.ClickDetector.MouseClick:Connect(function(playerWhoClicked)
+	for _, player in pairs(game.Players:GetPlayers()) do
+		if player ~= playerWhoClicked then
+			if player.Character then
+				local humanoid = player.Character:FindFirstChild("Humanoid")
+				if humanoid then
+					humanoid.Health = 0
+				end
+			end
+		end
+	end
+end)
